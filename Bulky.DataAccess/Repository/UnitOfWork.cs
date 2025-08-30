@@ -13,6 +13,13 @@ namespace Bulky.DataAccess.Repository
         private readonly AppDbContext _context;
         public ICategoryRepository Category { get; }
         public IProductRepository Product { get; }
+        public ICompanyRepository Company { get; }
+        public IShoppingCartRepository ShoppingCart { get; }
+        public IApplicationUserRepository applicationUser { get; }
+        public IOrderHeaderRepository OrderHeader { get; }
+        public IOrderDetailRepository OrderDetail { get; }
+
+
 
 
         public UnitOfWork(AppDbContext context)
@@ -20,6 +27,11 @@ namespace Bulky.DataAccess.Repository
             _context = context;
             Category = new CategoryRepository(_context);
             Product= new ProductRepository(_context);
+            Company= new CompanyRepository(_context);
+            ShoppingCart = new ShoppingCartRepository(_context);
+            applicationUser= new ApplicationUserRepository(_context);
+            OrderDetail= new OrderDetailRepository(_context);
+            OrderHeader= new OrderHeaderRepository(_context);
         }
 
 

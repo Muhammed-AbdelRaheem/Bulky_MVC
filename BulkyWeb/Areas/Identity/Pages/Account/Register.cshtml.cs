@@ -10,6 +10,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Bulky.DataAccess.IRepository;
 using Bulky.Models.Models;
 using Bulky.Utility;
 using Microsoft.AspNetCore.Authentication;
@@ -17,6 +18,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
@@ -27,6 +29,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IUserStore<IdentityUser> _userStore;
@@ -35,6 +38,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
+            IUnitOfWork unitOfWork,
             RoleManager<IdentityRole> roleManager,
             UserManager<IdentityUser> userManager,
             IUserStore<IdentityUser> userStore,
@@ -42,6 +46,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _unitOfWork = unitOfWork;
             _roleManager = roleManager;
             _userManager = userManager;
             _userStore = userStore;
@@ -106,7 +111,7 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
 
 
             public string? Role { get; set; }
-
+            [ValidateNever]
             public IEnumerable<SelectListItem> RoleList { get; set; }
             [Required]
             public string name { get; set; }
@@ -115,13 +120,19 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             public string? state { get; set; }
             public string? postalCode { get; set; }
             public string? phoneNumber { get; set; }
+            public int? companyId { get; set; }
+            [ValidateNever]
+
+            public IEnumerable<SelectListItem> CompanyList { get; set; }
+
+
 
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
-            if ( !await _roleManager.RoleExistsAsync(Sd.Role_Admin))
+            if (!await _roleManager.RoleExistsAsync(Sd.Role_Admin))
             {
                 await _roleManager.CreateAsync(new IdentityRole(Sd.Role_Admin));
                 await _roleManager.CreateAsync(new IdentityRole(Sd.Role_Employee));
@@ -136,6 +147,11 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                 {
                     Text = r,
                     Value = r
+                }),
+                CompanyList = _unitOfWork.Company.GetAll().Select(r => new SelectListItem
+                {
+                    Text = r.Name,
+                    Value = r.Id.ToString()
                 })
             };
             ReturnUrl = returnUrl;
@@ -150,9 +166,9 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             {
                 var user = CreateUser();
 
-                if (! string.IsNullOrEmpty(Input.Role))
+                if (!string.IsNullOrEmpty(Input.Role))
                 {
-                  await  _userManager.AddToRoleAsync(user, Input.Role);
+                    await _userManager.AddToRoleAsync(user, Input.Role);
                 }
                 else
                 {
@@ -163,12 +179,15 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 user.streetAddress = Input.streetAddress;
-                user.state = Input.name;
-                user.city = Input.city; 
+                user.name = Input.name;
+                user.city = Input.city;
                 user.state = Input.state;
                 user.postalCode = Input.postalCode;
                 user.PhoneNumber = Input.phoneNumber;
-
+                if (Input.Role == Sd.Role_Company)
+                {
+                    user.companyId = Input.companyId;
+                }
 
                 var result = await _userManager.CreateAsync(user, Input.Password);
 

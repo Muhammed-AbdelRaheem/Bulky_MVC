@@ -20,10 +20,13 @@ namespace Bulky.DataAccess.Repository
             this._Dbset = _context.Set<T>();
             _context.Products.Include(u => u.Category).Include(u => u.CategoryId);
         }
-        public IEnumerable<T> GetAll(string? include = null)
+        public IEnumerable<T> GetAll(Expression<Func<T, bool>>? filter = null, string? include = null)
         {
-
             IQueryable<T> query = _Dbset;
+            if (filter!=null)
+            {
+                query = query.Where(filter);
+            }
             if (!string.IsNullOrEmpty(include))
             {
                 foreach (var includeProp in include
@@ -35,9 +38,18 @@ namespace Bulky.DataAccess.Repository
             return query.ToList();
 
         }
-        public T Get(Expression<Func<T, bool>> filter, string? include = null)
+        public T Get(Expression<Func<T, bool>> filter, string? include = null, bool tracked = false)
         {
-            IQueryable<T> query = _Dbset;
+            IQueryable<T> query;
+            if (tracked)
+            {
+                 query = _Dbset;
+            }
+            else
+            {
+              query = _Dbset.AsNoTracking();              
+            }
+            query = query.Where(filter);
             if (!string.IsNullOrEmpty(include))
             {
                 foreach (var includeProp in include
@@ -46,7 +58,7 @@ namespace Bulky.DataAccess.Repository
                     query = query.Include(includeProp);
                 }
             }
-            return query.Where(filter).FirstOrDefault();
+            return query.FirstOrDefault();
         }
         public void Add(T Entity)
         {

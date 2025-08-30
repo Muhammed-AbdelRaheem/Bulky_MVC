@@ -22,11 +22,11 @@ namespace BulkyWeb.Areas.Admin.Controllers
 
             _unitOfWork = unitOfWork;
             this._webHostEnvironment = webHostEnvironment;
-        }
+        } 
 
         public IActionResult Index()
         {
-            var products = _unitOfWork.Product.GetAll("Category").ToList();
+            var products = _unitOfWork.Product.GetAll(null,"Category").ToList();
 
 
 
