@@ -17,6 +17,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Bulky.Models.Models;
+using Bulky.Utility;
 
 namespace BulkyWeb.Areas.Identity.Pages.Account
 {
@@ -84,6 +86,17 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+
+
+            [Required]
+            public string name { get; set; }
+            public string? streetAddress { get; set; }
+            public string? city { get; set; }
+            public string? state { get; set; }
+            public string? postalCode { get; set; }
+            public string? phoneNumber { get; set; }
+
+
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -131,7 +144,9 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        name = info.Principal.FindFirstValue(ClaimTypes.Name)
+
                     };
                 }
                 return Page();
@@ -155,10 +170,19 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                user.streetAddress = Input.streetAddress;
+                user.name = Input.name;
+                user.city = Input.city; 
+                user.PhoneNumber = Input.phoneNumber;   
+                user.state = Input.state;
+                user.postalCode = Input.postalCode;
+
+
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
                 {
+                   await _userManager.AddToRoleAsync(user, Sd.Role_Customer);
                     result = await _userManager.AddLoginAsync(user, info);
                     if (result.Succeeded)
                     {
@@ -197,11 +221,11 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private IdentityUser CreateUser()
+        private ApplicationUser CreateUser()
         {
             try
             {
-                return Activator.CreateInstance<IdentityUser>();
+                return Activator.CreateInstance<ApplicationUser>();
             }
             catch
             {

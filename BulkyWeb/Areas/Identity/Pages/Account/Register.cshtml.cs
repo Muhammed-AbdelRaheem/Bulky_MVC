@@ -213,8 +213,16 @@ namespace BulkyWeb.Areas.Identity.Pages.Account
                     }
                     else
                     {
+                        if (User.IsInRole(Sd.Role_Admin))
+                        {
+                            TempData["Success"] = $"{user.name} Created Successfully";
+                        }
+                        else
+                        {
+
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        }
+                            return LocalRedirect(returnUrl);
                     }
                 }
                 foreach (var error in result.Errors)

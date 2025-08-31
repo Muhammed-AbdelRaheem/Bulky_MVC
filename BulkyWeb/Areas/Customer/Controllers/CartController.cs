@@ -18,7 +18,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
         private readonly IUnitOfWork _unitOfWork;
 
         [BindProperty]
-        public ShoppingCartVm ShoppingCartVm { get; set; }
+        public ShoppingCartVm? ShoppingCartVm { get; set; }
         public CartController(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
@@ -251,7 +251,7 @@ namespace BulkyWeb.Areas.Customer.Controllers
                     _unitOfWork.OrderHeader.UpdateStatus(id, Sd.StatusApproved, Sd.PaymentStatusApproved);
                     _unitOfWork.Save();
                 }
-                //HttpContext.Session.Clear();
+                HttpContext.Session.Clear();
 
             }
             List<ShoppingCart> shoppingCarts = _unitOfWork.ShoppingCart
