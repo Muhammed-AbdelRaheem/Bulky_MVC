@@ -24,9 +24,8 @@ namespace BulkyWeb.Areas.Customer.Controllers
 
         public IActionResult Index()
         {
+
             IEnumerable<Product> productList = _unitOfWork.Product.GetAll(include: "Category");
-
-
 
             return View(productList);
         }
@@ -68,8 +67,8 @@ namespace BulkyWeb.Areas.Customer.Controllers
                 _unitOfWork.ShoppingCart.Add(shoppingCart);
                 shoppingCart.Id = 0;
                 _unitOfWork.Save();
-                //HttpContext.Session.SetInt32(SD.SessionCart,
-                //_unitOfWork.ShoppingCart.GetAll(u => u.ApplicationUserId == userId).Count());
+                HttpContext.Session.SetInt32(Sd.SessionCart,
+                _unitOfWork.ShoppingCart.GetAll(u => u.AppUserId == userId).Count());
             }
             TempData["success"] = "Cart updated successfully";
 
