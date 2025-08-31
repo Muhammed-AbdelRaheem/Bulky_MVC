@@ -14,6 +14,7 @@ namespace Bulky.DataAccess.IRepository
         void Update(OrderHeader Entity);
      
 
-
+        void UpdateStatus(int id, string orderStatus, string? paymentStatus = null);
+        void UpdateStripePaymentId(int id, string sessionId, string paymentIntentId);
     }
 }
