@@ -34,10 +34,9 @@ namespace Bulky.DataAccess.Repository
                 EntityFromDb.Description = Entity.Description;
                 EntityFromDb.CategoryId = Entity.CategoryId;
                 EntityFromDb.Author = Entity.Author;
-                if (Entity.ImageUrl != null)
-                {
-                    EntityFromDb.ImageUrl = Entity.ImageUrl;
-                }
+                EntityFromDb.ProductImages = Entity.ProductImages;
+
+           
             }
         }
     

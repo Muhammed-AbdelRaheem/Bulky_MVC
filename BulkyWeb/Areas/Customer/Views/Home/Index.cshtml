@@ -7,7 +7,14 @@
             <div class="row p-2">
                 <div class="col-12 p-1">
                     <div class="card border-0 mb-5 shadow  border-top border-5 rounded">
-                        <img src="@product.ImageUrl" class="card-image-top " />
+
+
+
+                        <img src="@(product.ProductImages != null && product.ProductImages.Count > 0 ? product.ProductImages[0].ImageUrl : "https://placehold.co/500x600/png")"
+                             class="card-img-top mt-3"
+                             alt="@product.Title"
+                             style="height: 200px; object-fit: contain;" />
+
                         <div class="card-body pb-0">
                             <div class="pl-1">
                                 <p class="card-title h6 text-dark opacity-75 text-uppercase text-center">@product.Title</p>

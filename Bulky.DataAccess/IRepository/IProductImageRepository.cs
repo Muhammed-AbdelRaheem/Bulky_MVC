@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace Bulky.DataAccess.IRepository
 {
-    public interface IApplicationUserRepository:IRepository<ApplicationUser> 
+    public interface IProductImageRepository : IRepository<ProductImage> 
 
     {
-        void Update(ApplicationUser Entity);
-
+        void Update(ProductImage Entity);
+     
 
 
     }
