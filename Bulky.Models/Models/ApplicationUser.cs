@@ -22,6 +22,9 @@ namespace Bulky.Models.Models
         public int? companyId { get; set; }
         [ForeignKey("companyId")]
         [ValidateNever]
-        public Company company { get; set; }
+        public Company? company { get; set; }
+        [NotMapped]
+        public string Role { get; set; }
+
     }
 }
